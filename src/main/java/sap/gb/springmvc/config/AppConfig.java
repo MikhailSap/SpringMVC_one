@@ -1,4 +1,4 @@
-package sap.gb.springmvc;
+package sap.gb.springmvc.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -9,14 +9,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.ThymeleafViewResolver;
-import sap.gb.springmvc.persist.ProductRepo;
-import sap.gb.springmvc.persist.UserRepo;
+import sap.gb.springmvc.Service.ProductServiceImpl;
+import sap.gb.springmvc.repo.ProductRepo;
 
-import java.util.concurrent.ConcurrentHashMap;
 
 @EnableWebMvc
 @Configuration
-@ComponentScan
+@ComponentScan("sap.gb.springmvc")
 public class AppConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -47,17 +46,9 @@ public class AppConfig implements WebMvcConfigurer {
         return thymeleafViewResolver;
     }
 
-
     @Bean
-    public UserRepo userRepo() {
-        return new UserRepo(new ConcurrentHashMap<>());
+    public ProductServiceImpl productService(ProductRepo productRepo) {
+        return new ProductServiceImpl(productRepo);
     }
-
-    @Bean
-    public ProductRepo productRepo() {
-        return new ProductRepo(new ConcurrentHashMap<>());
-    }
-
-
 
 }

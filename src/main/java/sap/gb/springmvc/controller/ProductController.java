@@ -6,18 +6,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import sap.gb.springmvc.Service.ProductService;
 import sap.gb.springmvc.model.Product;
-import sap.gb.springmvc.persist.ProductRepo;
 
-import java.util.List;
 
 @Controller
 public class ProductController {
-    private ProductRepo productRepo;
+    private ProductService productService;
 
     @Autowired
-    public ProductController(ProductRepo productRepo) {
-        this.productRepo = productRepo;
+    public void setProductService(ProductService productService) {
+        this.productService = productService;
     }
 
     @GetMapping("newProduct")
@@ -27,16 +27,23 @@ public class ProductController {
 
     }
 
+
     @PostMapping("product")
     public String addProduct(Product product) {
-        productRepo.saveProduct(product);
+        productService.save(product);
         return "product";
     }
 
+//    @GetMapping("products")
+//    public String getProducts(Model model) {
+//        model.addAttribute("products", productService.getAllProducts());
+//        return "products";
+//    }
+
     @GetMapping("products")
-    public String getProducts(Model model) {
-        List<Product> products = productRepo.getAllProducts();
-        model.addAttribute("products", products);
+    public String filter(@RequestParam(value = "minPrice", required = false) Integer min,
+                         @RequestParam(value = "maxPrice", required = false) Integer max, Model model) {
+        model.addAttribute("products", productService.filterByMinMax(min, max));
         return "products";
     }
 }
