@@ -1,5 +1,7 @@
 package sap.gb.springmvc.Service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sap.gb.springmvc.model.Product;
@@ -29,23 +31,30 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     @Transactional(readOnly = true)
-    public List<Product> getAllProducts() {
-        return productRepo.findAll();
+    public Page<Product> getAllProducts(Pageable pageable) {
+        return productRepo.findAll(pageable);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Product> filterByMinMax(Integer min, Integer max) {
-        List<Product> products;
+    public Page<Product> filterByMinMax(Integer min, Integer max, Pageable pageable) {
+        Page<Product> productsPage;
         if (min == null && max== null) {
-            products = getAllProducts();
+            productsPage = getAllProducts(pageable);
         } else if (min == null) {
-            products = productRepo.findByPriceLessThan(max);
+            productsPage = productRepo.findByPriceLessThan(max, pageable);
         } else if (max == null) {
-            products = productRepo.findByPriceGreaterThan(min);
+            productsPage = productRepo.findByPriceGreaterThan(min, pageable);
         } else {
-            products = productRepo.findByPriceBetween(min, max);
+            productsPage = productRepo.findByPriceBetween(min, max, pageable);
         }
-        return products;
+        return productsPage;
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Product> filterByPartOfName(String partOfName, Pageable pageable) {
+        return productRepo.findByNameLike("%"+partOfName+"%", pageable);
+    }
+
 }

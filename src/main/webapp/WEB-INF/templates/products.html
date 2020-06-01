@@ -1,5 +1,4 @@
 <!doctype html>
-<html lang="en">
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 
 <head>
@@ -49,12 +48,25 @@
         <div class="col-12 mt-3">
             <form>
                 <label for="minPrice">Min price</label>
-                <input type="number" name="minPrice" id="minPrice"/>
+                <input type="number" name="minPrice" id="minPrice" th:value="${min}"/>
 
                 <label for="maxPrice">Max price</label>
-                <input type="number" name="maxPrice" id="maxPrice"/>
+                <input type="number" name="maxPrice" id="maxPrice" th:value="${max}"/>
 
-                <button class="btn btn-primary" type="submit">Filter</button>
+                <label for="pageSize">Page size</label>
+                <input type="number" name="pageSize" id="pageSize"/>
+
+
+                <button class="btn btn-primary" type="submit">FilterByPrice</button>
+            </form>
+        </div>
+
+        <div class="col-12 mt-3">
+            <form th:action="@{/products/name}" method="get">
+                <label for="partOfName">Name</label>
+                <input type="text" name="partOfName" id="partOfName" th:value="${partOfName}"/>
+
+                <button class="btn btn-primary" type="submit">FilterByName</button>
             </form>
         </div>
 
@@ -70,10 +82,10 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr hidden>
+                <tr th:unless="${productsPage.hasContent()}">
                     <td class="text-center" colspan="5">No data</td>
                 </tr>
-                <tr th:each="product : ${products}">
+                <tr th:if="${productsPage.hasContent()}" th:each="product : ${productsPage.content}">
                     <td th:text="${product.id}"></td>
                     <td th:text="${product.name}"></td>
                     <td th:text="${product.description}"></td>
@@ -86,6 +98,37 @@
                 </tbody>
             </table>
         </div>
+    </div>
+    <nav aria-label="...">
+        <ul class="pagination">
+
+
+            <li class="page-item disabled" th:class="${productsPage.hasPrevious()} ? 'page-item' : 'page-item disabled'">
+                <a class="page-link"
+                   th:href="@{/products(minPrice=${min}, maxPrice=${max}, pageNumber=${productsPage.number}, pageSize=${productsPage.size})}">Previous</a>
+            </li>
+
+
+            <li th:each="pageNumber : ${#numbers.sequence(1, productsPage.totalPages)}" class="page-item"
+                th:class="${pageNumber == productsPage.number + 1} ? 'page-item active' : 'page-item'">
+                <a class="page-link"
+                   th:text="${pageNumber}"
+                   th:href="@{/products(minPrice=${min}, maxPrice=${max}, pageNumber=${pageNumber}, pageSize=${productsPage.size})}">page number</a>
+            </li>
+
+
+
+            <li class="page-item disabled" th:class="${productsPage.hasNext()} ? 'page-item' : 'page-item disabled'">
+                <a class="page-link"
+                   th:href="@{/products(minPrice=${min}, maxPrice=${max}, pageNumber=${productsPage.number + 2}, pageSize=${productsPage.size})}">Next</a>
+            </li>
+
+
+        </ul>
+    </nav>
+    <div th:text="${min}">
+    </div>
+    <div th:text="${max}">
     </div>
 </div>
 
