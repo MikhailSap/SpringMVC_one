@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"/>
+    <title>Product list</title>
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">EShop</a>
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="/app/products">Products</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/app/users">Users</a>
+            </li>
+        </ul>
+
+        <form class="form-inline my-2 my-lg-0" action="#" method="post">
+            <button class="btn btn-outline-success my-2 my-sm-0">Logout</button>
+        </form>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row py-2">
+        <div class="col-12">
+            <a class="btn btn-primary" href="/app/newProduct">Add Product</a>
+        </div>
+
+        <div class="col-12 mt-3">
+            <form>
+                <label for="minPrice">Min price</label>
+                <input type="number" name="minPrice" id="minPrice" th:value="${min}"/>
+
+                <label for="maxPrice">Max price</label>
+                <input type="number" name="maxPrice" id="maxPrice" th:value="${max}"/>
+
+                <label for="pageSize">Page size</label>
+                <input type="number" name="pageSize" id="pageSize"/>
+
+
+                <button class="btn btn-primary" type="submit">FilterByPrice</button>
+            </form>
+        </div>
+
+        <div class="col-12 mt-3">
+            <form th:action="@{/products/name}" method="get">
+                <label for="partOfName">Name</label>
+                <input type="text" name="partOfName" id="partOfName" th:value="${partOfName}"/>
+
+                <button class="btn btn-primary" type="submit">FilterByName</button>
+            </form>
+        </div>
+
+        <div class="col-12">
+            <table class="table table-bordered my-2">
+                <thead>
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:unless="${productsPage.hasContent()}">
+                    <td class="text-center" colspan="5">No data</td>
+                </tr>
+                <tr th:if="${productsPage.hasContent()}" th:each="product : ${productsPage.content}">
+                    <td th:text="${product.id}"></td>
+                    <td th:text="${product.name}"></td>
+                    <td th:text="${product.description}"></td>
+                    <td th:text="${product.price}"></td>
+                    <td>
+                        <a class="btn btn-success" href="#"><i class="fas fa-edit"></i></a>
+                        <a class="btn btn-danger" href="#"><i class="far fa-trash-alt"></i></a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <nav aria-label="...">
+        <ul class="pagination">
+
+
+            <li class="page-item disabled" th:class="${productsPage.hasPrevious()} ? 'page-item' : 'page-item disabled'">
+                <a class="page-link"
+                   th:href="@{/products(minPrice=${min}, maxPrice=${max}, pageNumber=${productsPage.number}, pageSize=${productsPage.size})}">Previous</a>
+            </li>
+
+
+            <li th:each="pageNumber : ${#numbers.sequence(1, productsPage.totalPages)}" class="page-item"
+                th:class="${pageNumber == productsPage.number + 1} ? 'page-item active' : 'page-item'">
+                <a class="page-link"
+                   th:text="${pageNumber}"
+                   th:href="@{/products(minPrice=${min}, maxPrice=${max}, pageNumber=${pageNumber}, pageSize=${productsPage.size})}">page number</a>
+            </li>
+
+
+
+            <li class="page-item disabled" th:class="${productsPage.hasNext()} ? 'page-item' : 'page-item disabled'">
+                <a class="page-link"
+                   th:href="@{/products(minPrice=${min}, maxPrice=${max}, pageNumber=${productsPage.number + 2}, pageSize=${productsPage.size})}">Next</a>
+            </li>
+
+
+        </ul>
+    </nav>
+    <div th:text="${min}">
+    </div>
+    <div th:text="${max}">
+    </div>
+</div>
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
